@@ -38,6 +38,7 @@ BreakInheritanceList: BeforeComma
 ColumnLimit: 0
 CompactNamespaces: false
 ContinuationIndentWidth: 8
+Cpp11BracedListStyle: false
 IndentCaseLabels: true
 IndentPPDirectives: BeforeHash
 IndentWidth: 4

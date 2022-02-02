@@ -1,9 +1,8 @@
-# TODO fix flags
 set(CXX_STANDARD 17)
 set(GNU_CXX_WARNINGS "-Werror -pedantic-errors -Wall -Wextra -Wpedantic\
     -Wcast-align -Wcast-qual -Wconversion -Wctor-dtor-privacy -Wduplicated-branches -Wduplicated-cond\
     -Wextra-semi -Wenum-compare -Wfloat-equal -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual\
-    -Wredundant-decls -Wsign-conversion -Wsign-promo")
+    -Wredundant-decls -Wsign-conversion -Wsign-promo -Wpadded")
 set(GNU_CXX_COLORS "-fdiagnostics-color=always")
 set(GNU_CXX_SANITIZERS "-fsanitize=address -fsanitize=undefined -fno-sanitize-recover=all\
     -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fno-sanitize=null -fno-sanitize=alignment\
