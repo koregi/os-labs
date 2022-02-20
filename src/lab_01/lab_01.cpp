@@ -9,6 +9,7 @@ typedef struct {
 
 static void* proc1(void *arg) {
     printf("Thread 1 started\n");
+    fflush(stdout);
     targs *args = (targs*) arg;
     while (!args->flag) {
         printf("1\n");
@@ -20,6 +21,7 @@ static void* proc1(void *arg) {
 
 static void* proc2(void *arg) {
     printf("Thread 2 started\n");
+    fflush(stdout);
     targs *args = (targs*) arg;
     while (!args->flag) {
         printf("2\n");
@@ -48,16 +50,21 @@ int main() {
     pthread_create(&id2, NULL, proc2, &arg2);
 
     printf("Program is waiting for a keystroke\n");
+    fflush(stdout);
     getchar();
     printf("Key pressed\n");
+    fflush(stdout);
     arg1.flag = 1;
     arg2.flag = 1;
 
     pthread_join(id1, (void**)&exitcode1);
     printf("Thread 1 finished with exit code: %u\n", *exitcode1);
+    fflush(stdout);
     pthread_join(id2, (void**)&exitcode2);
     printf("Thread 2 finished with exit code: %u\n", *exitcode2);
+    fflush(stdout);
 
     printf("Program finished\n");
+    fflush(stdout);
     return 0;
 }
