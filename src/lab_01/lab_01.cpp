@@ -6,26 +6,27 @@ bool flag1 = 0;
 bool flag2 = 0;
 
 static void * proc1(void *arg) {
-    std::cout << "Thread 1 started" << std::endl;
+    printf("Thread 1 started\n");
     while (!flag1) {
-        std::cout << '1' << std::endl;
+        printf("1\n");
+	fflush(stdout);
 	sleep(1);
     }
     pthread_exit((void*)3);
-    return 0;
 }
 
 static void * proc2(void *arg) {
-    std::cout << "Thread 2 started" << std::endl;
+    printf("Thread 2 started\n");
     while (!flag2) {
-        std::cout << '2' << std::endl;
+        printf("2\n");
+	fflush(stdout);
 	sleep(1);
     }
     pthread_exit((void*)4);
-    return 0;
 }
 
 int main() {
+    printf("Program started\n");
     pthread_t id1;
     pthread_t id2;
     int *exitcode1;
@@ -34,17 +35,17 @@ int main() {
     pthread_create(&id1, NULL, proc1, NULL);
     pthread_create(&id2, NULL, proc2, NULL);
 
-    std::cout << "Program is waiting for a keystroke" << std::endl;
+    printf("Program is waiting for a keystroke\n");
     getchar();
-    std:: cout << "Key pressed" << std::endl;
+    printf("Key pressed\n");
     flag1 = 1;
     flag2 = 1;
 
     pthread_join(id1, (void**)&exitcode1);
-    std::cout << "Thread 1 finished with exit code: " << *exitcode1 << std::endl;
+    printf("Thread 1 finished with exit code: %p\n", exitcode1);
     pthread_join(id2, (void**)&exitcode2);
-    std::cout << "Thread 2 finished with exit code: " << *exitcode2 << std::endl;
+    printf("Thread 2 finished with exit code: %p\n", exitcode2);
 
-    std::cout << "Program finished" << std::endl;
+    printf("Program finished\n");
     return 0;
 }
