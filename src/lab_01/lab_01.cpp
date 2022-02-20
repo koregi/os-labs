@@ -2,46 +2,56 @@
 #include <pthread.h>
 #include <unistd.h>
 
-bool flag1 = 0;
-bool flag2 = 0;
+typedef struct {
+    bool flag;
+    int exitcode;
+} targs;
 
 static void* proc1(void *arg) {
     printf("Thread 1 started\n");
-    while (!flag1) {
+    targs *args = (targs*) arg;
+    while (!args->flag) {
         printf("1\n");
 	fflush(stdout);
 	sleep(1);
     }
-    int* ret = new int(3);
-    pthread_exit(ret);
+    pthread_exit((void*)&(args->exitcode));
 }
 
 static void* proc2(void *arg) {
     printf("Thread 2 started\n");
-    while (!flag2) {
+    targs *args = (targs*) arg;
+    while (!args->flag) {
         printf("2\n");
 	fflush(stdout);
 	sleep(1);
     }
-    int* ret = new int(4);
-    pthread_exit(ret);
+    pthread_exit((void*)&(args->exitcode));
 }
 
 int main() {
     printf("Program started\n");
+
     pthread_t id1;
     pthread_t id2;
-    int *exitcode1;
-    int *exitcode2;
+    targs arg1;
+    targs arg2;
+    int* exitcode1;
+    int* exitcode2;
 
-    pthread_create(&id1, NULL, proc1, NULL);
-    pthread_create(&id2, NULL, proc2, NULL);
+    arg1.flag = 0;
+    arg1.exitcode = 3;
+    arg2.flag = 0;
+    arg2.exitcode = 4;
+
+    pthread_create(&id1, NULL, proc1, &arg1);
+    pthread_create(&id2, NULL, proc2, &arg2);
 
     printf("Program is waiting for a keystroke\n");
     getchar();
     printf("Key pressed\n");
-    flag1 = 1;
-    flag2 = 1;
+    arg1.flag = 1;
+    arg2.flag = 1;
 
     pthread_join(id1, (void**)&exitcode1);
     printf("Thread 1 finished with exit code: %u\n", *exitcode1);
