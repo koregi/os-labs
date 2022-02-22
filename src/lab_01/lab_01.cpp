@@ -35,8 +35,8 @@ int main() {
     int* exitcode1;
     int* exitcode2;
 
-    pthread_create(&id1, NULL, proc1, &flag1);
-    pthread_create(&id2, NULL, proc2, &flag2);
+    pthread_create(&id1, nullptr, proc1, &flag1);
+    pthread_create(&id2, nullptr, proc2, &flag2);
 
     printf("Program is waiting for a keystroke\n");
     getchar();
