@@ -1,4 +1,4 @@
-#include <iostream>
+#include <cstdio>
 #include <pthread.h>
 #include <unistd.h>
 
@@ -27,19 +27,21 @@ static void* proc2(void *arg) {
 int main() {
     printf("Program started\n");
     
-    bool flag = 0;
+    bool flag1 = false;
+    bool flag2 = false;
     pthread_t id1;
     pthread_t id2;
     int* exitcode1;
     int* exitcode2;
 
-    pthread_create(&id1, NULL, proc1, &flag);
-    pthread_create(&id2, NULL, proc2, &flag);
+    pthread_create(&id1, NULL, proc1, &flag1);
+    pthread_create(&id2, NULL, proc2, &flag2);
 
     printf("Program is waiting for a keystroke\n");
     getchar();
     printf("Key pressed\n");
-    flag = 1;
+    flag1 = true;
+    flag2 = true;
 
     pthread_join(id1, (void**)&exitcode1);
     printf("Thread 1 finished with exit code: %p\n", exitcode1);
