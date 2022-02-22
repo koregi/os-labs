@@ -1,25 +1,26 @@
-#include <cstdio>
 #include <pthread.h>
 #include <unistd.h>
 
-static void* proc1(void *arg) {
+#include <cstdio>
+
+static void* proc1(void* arg) {
     printf("Thread 1 started\n");
     bool* flag = (bool*)arg;
     while (!(*flag)) {
         printf("1\n");
-	fflush(stdout);
-	sleep(1);
+        fflush(stdout);
+        sleep(1);
     }
     pthread_exit((void*)3);
 }
 
-static void* proc2(void *arg) {
+static void* proc2(void* arg) {
     printf("Thread 2 started\n");
     bool* flag = (bool*)arg;
     while (!(*flag)) {
         printf("2\n");
-	fflush(stdout);
-	sleep(1);
+        fflush(stdout);
+        sleep(1);
     }
     pthread_exit((void*)4);
 }
