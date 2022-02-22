@@ -26,7 +26,7 @@ static void* proc2(void *arg) {
 
 int main() {
     printf("Program started\n");
-    
+
     bool flag1 = false;
     bool flag2 = false;
     pthread_t id1;
@@ -44,9 +44,9 @@ int main() {
     flag2 = true;
 
     pthread_join(id1, (void**)&exitcode1);
-    printf("Thread 1 finished with exit code: %p\n", exitcode1);
+    printf("Thread 1 finished with exit code: %p\n", (void*)exitcode1);
     pthread_join(id2, (void**)&exitcode2);
-    printf("Thread 2 finished with exit code: %p\n", exitcode2);
+    printf("Thread 2 finished with exit code: %p\n", (void*)exitcode2);
 
     printf("Program finished\n");
     return 0;
