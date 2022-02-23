@@ -9,6 +9,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: cppcheck
+      run: sudo apt install -y cppcheck
+
     - name: configure
       run: mkdir -p ${{github.workspace}}/build; pushd ${{github.workspace}}/build; cmake ../; popd
 
