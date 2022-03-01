@@ -4,6 +4,10 @@
 #include <cstdio>
 #include <cstdint>
 #include <errno.h>
+#include <cerrno>
+
+#include <string.h>
+#include <stdlib.h>
 
 static void* proc1(void* arg) {
     printf("Thread 1 started\n");
@@ -29,9 +33,9 @@ static void* proc2(void* arg) {
 
 static void pclock(clockid_t cid) {
     struct timespec ts;
+    clock_gettime(cid, &ts);
     printf("Clocktime value: ");
-    std::cout << clock_gettime(cid, &ts) << std::endl;
-    printf("%4ld.%03ld\n", (intmax_t)ts.tv_sec, ts.tv_nsec / 1000000);
+    printf("%4jd.%03ld\n", (intmax_t)ts.tv_sec, ts.tv_nsec / 10000);
 }
 
 
@@ -48,8 +52,14 @@ int main() {
     int* exitcode2;
 
     pthread_create(&id1, nullptr, proc1, &flag1);
-    pthread_getcpuclockid(id1, &cid1);
     pthread_create(&id2, nullptr, proc2, &flag2);
+
+    printf("Main thread consuming some CPU time...\n");
+    for (int j = 0; j < 2000000; j++)
+         getppid();
+    pclock(CLOCK_PROCESS_CPUTIME_ID);
+
+    pthread_getcpuclockid(id1, &cid1);
     pthread_getcpuclockid(id2, &cid2);
 
     printf("Program is waiting for a keystroke\n");
@@ -58,12 +68,13 @@ int main() {
     flag1 = true;
     flag2 = true;
 
+
+    pclock(cid1);
     pthread_join(id1, (void**)&exitcode1);
     printf("Thread 1 finished with exit code: %p\n", (void*)exitcode1);
-    pclock(cid1);
+    pclock(cid2);
     pthread_join(id2, (void**)&exitcode2);
     printf("Thread 2 finished with exit code: %p\n", (void*)exitcode2);
-    pclock(cid2);
 
     printf("Program finished\n");
     return 0;
