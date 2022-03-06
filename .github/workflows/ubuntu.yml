@@ -29,6 +29,13 @@ jobs:
           cmake -S ${{github.workspace}} -B ${{github.workspace}}/build
 
       - name: build
-        run: cmake --build ${{github.workspace}}/build
+        run: cmake --build ${{github.workspace}}/build --config ${{matrix.build}}
 
       - uses: actions/download-artifact@v3
+        with:
+          name: output
+          path: ${{github.workspace}}/build/bin
+
+      - name: display structure of downloaded files
+        run: ls -alR
+        working-directory: ${{github.workspace}}/build/bin
