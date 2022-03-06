@@ -31,6 +31,10 @@ jobs:
       - name: build
         run: cmake --build ${{github.workspace}}/build --config ${{matrix.build}}
 
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ${{github.workspace}}/build/bin
+
       - uses: actions/download-artifact@v3
         with:
           path: ${{github.workspace}}/build/bin
