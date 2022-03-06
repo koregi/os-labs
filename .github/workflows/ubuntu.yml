@@ -1,0 +1,37 @@
+name: build
+
+on: [push]
+
+jobs:
+  ubuntu:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        build: [ Debug, Release ]
+        compiler:
+          - { cc: "gcc-9",    cxx: "g++-9" }
+          - { cc: "gcc-10",   cxx: "g++-10" }
+          - { cc: "clang-10", cxx: "clang++-10" }
+          - { cc: "clang-11", cxx: "clang++-11" }
+          - { cc: "clang-12", cxx: "clang++-12" }
+
+    name: "${{matrix.compiler.cxx}}:${{matrix.build}}"
+
+    steps:
+    - name: checkout repository
+    - uses: actions/checkout@v2
+
+    - name: install cppcheck
+      run: sudo apt install -y cppcheck
+
+    - name: configure cmake
+      run: |
+        mkdir -p ${{github.workspace}}/build
+        cmake -S .
+
+    - name: build
+      run: cmake --build ${{github.workspace}}/build
+
+    - name: download artifacts
+      uses: actions/download-artifact@v3
