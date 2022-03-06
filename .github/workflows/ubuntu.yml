@@ -1,6 +1,6 @@
-name: build
+name: ubuntu
 
-on: [push]
+on: [ push ]
 
 jobs:
   ubuntu:
@@ -19,19 +19,19 @@ jobs:
     name: "${{matrix.compiler.cxx}}:${{matrix.build}}"
 
     steps:
-    - name: checkout repository
-    - uses: actions/checkout@v2
+      - name: checkout repository
+      - uses: actions/checkout@v2
 
-    - name: install cppcheck
-      run: sudo apt install -y cppcheck
+      - name: install cppcheck
+        run: sudo apt install -y cppcheck
 
-    - name: configure cmake
-      run: |
-        mkdir -p ${{github.workspace}}/build
-        cmake -S .
+      - name: configure cmake
+        run: |
+          mkdir -p ${{github.workspace}}/build
+          cmake -S ${{github.workspace}} -B ${{github.workspace}}/build
 
-    - name: build
-      run: cmake --build ${{github.workspace}}/build
+      - name: build
+        run: cmake --build ${{github.workspace}}/build
 
-    - name: download artifacts
-      uses: actions/download-artifact@v3
+      - name: download artifacts
+      - uses: actions/download-artifact@v3
