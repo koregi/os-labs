@@ -8,10 +8,10 @@ trim_trailing_whitespace = true
 max_line_length = 120
 tab_width = 4
 
-[*.cpp]
+[{*.cpp, *.h}]
 indent_style = space
 indent_size = 4
 
-[{*.md, *.sh, *yml}]
+[{*.md, *.sh, *.yml}]
 indent_style = space
 indent_size = 2
