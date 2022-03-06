@@ -17,9 +17,7 @@ jobs:
           - { cc: "clang-12", cxx: "clang++-12" }
 
     name: "${{matrix.compiler.cxx}}:${{matrix.build}}"
-
     steps:
-      - name: checkout repository
       - uses: actions/checkout@v2
 
       - name: install cppcheck
@@ -33,5 +31,4 @@ jobs:
       - name: build
         run: cmake --build ${{github.workspace}}/build
 
-      - name: download artifacts
       - uses: actions/download-artifact@v3
