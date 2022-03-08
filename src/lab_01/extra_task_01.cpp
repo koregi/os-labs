@@ -1,6 +1,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <cstdio>
+#include <stdint.h>
 
 static void* proc1(void* arg) {
     printf("Thread 1 started\n");
@@ -27,8 +28,8 @@ static void* proc2(void* arg) {
 static void pclock(int num, clockid_t cid) {
     struct timespec ts;
     clock_gettime(cid, &ts);
-    printf("Clocktime value of thread %i%c", num, ':');
-    printf("%4jd.%03ld\n", ts.tv_sec, ts.tv_nsec / 10000);
+    printf("Clocktime value of thread %i: ", num);
+    printf("%4jd.%06ld\n", ts.tv_sec, ts.tv_nsec / 1000);
 }
 
 
