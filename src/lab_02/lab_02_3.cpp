@@ -20,7 +20,7 @@ static void* proc1(void* arg) {
         args->tp.tv_nsec += 500000000;
         if (sem_timedwait(&args->sem, &args->tp) == 0) {
             printf("Semaphore captured by thread 1\n");
-            for (int i = 0; i < 6; ++i) {
+            for (size_t idx = 0; idx < 6; ++idx) {
                 printf("1\n");
                 fflush(stdout);
                 sleep(1);
@@ -41,7 +41,7 @@ static void* proc2(void* arg) {
         args->tp.tv_sec += 1;
         if (sem_timedwait(&args->sem, &args->tp) == 0) {
             printf("Semaphore captured by thread 2\n");
-            for (int i = 0; i < 3; ++i) {
+            for (size_t idx = 0; idx < 3; ++idx) {
                 printf("2\n");
                 fflush(stdout);
                 sleep(1);
