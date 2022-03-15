@@ -1,46 +1,47 @@
-#include <cstdio>
 #include <pthread.h>
-#include <unistd.h>
 #include <semaphore.h>
+#include <unistd.h>
+
+#include <cstdio>
 
 
-struct targs {
-    bool flag = false;
-    sem_t sem;
+struct args_t {
+    bool flag{false};
+    sem_t sem{};
 };
 
 static void* proc1(void* arg) {
     printf("Thread 1 started\n");
-    targs *args = (targs*)arg;
+    args_t* args = (args_t*)arg;
     while (!(args->flag)) {
-	sem_wait(&args->sem);
-	printf("Semaphore captured by thread 1\n");
-	for (int i = 0; i < 6; ++i) {
-	    printf("1\n");
+        sem_wait(&args->sem);
+        printf("Semaphore captured by thread 1\n");
+        for (int i = 0; i < 6; ++i) {
+            printf("1\n");
             fflush(stdout);
             sleep(1);
-	}
-	sem_post(&args->sem);
-	printf("Semaphore free\n");
-	sleep(1);
+        }
+        sem_post(&args->sem);
+        printf("Semaphore free\n");
+        sleep(1);
     }
     pthread_exit((void*)3);
 }
 
 static void* proc2(void* arg) {
     printf("Thread 2 started\n");
-    targs *args = (targs*)arg;
+    args_t* args = (args_t*)arg;
     while (!(args->flag)) {
-	sem_wait(&args->sem);
-	printf("Semaphore captured by thread 2\n");
-	for (int i = 0; i < 3; ++i) {
+        sem_wait(&args->sem);
+        printf("Semaphore captured by thread 2\n");
+        for (int i = 0; i < 3; ++i) {
             printf("2\n");
             fflush(stdout);
             sleep(1);
-	}
-	sem_post(&args->sem);
-	printf("Semaphore free\n");
-	sleep(1);
+        }
+        sem_post(&args->sem);
+        printf("Semaphore free\n");
+        sleep(1);
     }
     pthread_exit((void*)4);
 }
@@ -52,7 +53,7 @@ int main() {
     pthread_t id2;
     int* exitcode1;
     int* exitcode2;
-    targs args;
+    args_t args;
 
     sem_init(&args.sem, 0, 1);
     printf("Semaphore created\n");
