@@ -1,6 +1,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <cstdio>
+#include <cstdint>
 
 static void* proc1(void* arg) {
     printf("Thread 1 started\n");
@@ -24,13 +25,6 @@ static void* proc2(void* arg) {
     pthread_exit((void*)4);
 }
 
-static void pclock(int num, clockid_t cid) {
-    struct timespec ts;
-    clock_gettime(cid, &ts);
-    printf("Clocktime value of thread %i%c", num, ':');
-    printf("%4jd.%03ld\n", ts.tv_sec, ts.tv_nsec / 10000);
-}
-
 
 int main() {
     printf("Program started\n");
@@ -41,6 +35,8 @@ int main() {
     pthread_t id2;
     clockid_t cid1;
     clockid_t cid2;
+    struct timespec ts1;
+    struct timespec ts2;
     int* exitcode1;
     int* exitcode2;
 
@@ -57,8 +53,13 @@ int main() {
     flag2 = true;
 
 
-    pclock(1, cid1);
-    pclock(2, cid2);
+    clock_gettime(cid1, &ts1);
+    printf("Clocktime value of thread 1: ");
+    printf("%jd.%06ld\n", ts1.tv_sec, ts1.tv_nsec / 1000);
+    clock_gettime(cid2, &ts2);
+    printf("Clocktime value of thread 2: ");
+    printf("%jd.%06ld\n", ts2.tv_sec, ts2.tv_nsec / 1000);
+
     pthread_join(id1, (void**)&exitcode1);
     printf("Thread 1 finished with exit code: %p\n", (void*)exitcode1);
     pthread_join(id2, (void**)&exitcode2);
