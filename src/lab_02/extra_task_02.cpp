@@ -3,6 +3,7 @@
 #include <unistd.h>
 
 #include <cstdio>
+#include <iostream>
 
 
 struct args_t {
@@ -14,8 +15,11 @@ static void* proc1(void* arg) {
     printf("Thread 1 started\n");
     args_t* args = (args_t*)arg;
     while (!(args->flag)) {
-        if (sem_trywait(&args->sem) == 0) {
-            printf("Semaphore captured by thread 1\n");
+	while (sem_trywait(&args->sem) == -1) {
+	    usleep(500000);
+	}
+	if (!(args->flag)) {
+        printf("Semaphore captured by thread 1\n");
             for (size_t idx = 0; idx < 6; ++idx) {
                 printf("1\n");
                 fflush(stdout);
@@ -24,8 +28,6 @@ static void* proc1(void* arg) {
             sem_post(&args->sem);
             printf("Semaphore free\n");
 	    sleep(1);
-        } else {
-	    sleep(0.5);
 	}
     }
     pthread_exit((void*)3);
@@ -35,7 +37,10 @@ static void* proc2(void* arg) {
     printf("Thread 2 started\n");
     args_t* args = (args_t*)arg;
     while (!(args->flag)) {
-        if (sem_trywait(&args->sem) == 0) {
+	while (sem_trywait(&args->sem) == -1) {
+	    usleep(500000);
+	}
+	if (!(args->flag)) {
             printf("Semaphore captured by thread 2\n");
             for (size_t idx = 0; idx < 3; ++idx) {
                 printf("2\n");
@@ -45,8 +50,6 @@ static void* proc2(void* arg) {
             sem_post(&args->sem);
             printf("Semaphore free\n");
 	    sleep(1);
-        } else {
-            sleep(0.5);
 	}
     }
     pthread_exit((void*)4);
