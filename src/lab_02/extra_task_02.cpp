@@ -3,7 +3,6 @@
 #include <unistd.h>
 
 #include <cstdio>
-#include <iostream>
 
 
 struct args_t {
