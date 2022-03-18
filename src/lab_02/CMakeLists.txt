@@ -13,4 +13,4 @@ add_executable(lab_02_3 lab_02_3.cpp)
 target_link_libraries(lab_02_3 pthread)
 
 add_executable(extra_task_02 extra_task_02.cpp)
-target_link_libraries(extra_task pthread)
+target_link_libraries(extra_task_02 pthread)
