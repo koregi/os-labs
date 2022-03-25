@@ -26,7 +26,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
                 -Wredundant-decls
                 -Wsign-conversion
                 -Wsign-promo
-                -Wpadded
         )
     endif()
 endif()
