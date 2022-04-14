@@ -13,8 +13,8 @@ static void* proc1(void* arg) {
     args_t *args = (args_t*)arg;
     int buf;
     while (!(args->flag)) {
-        long size = sysconf(_SC_NGROUPS_MAX);
-        gid_t *list = new gid_t[size*sizeof(gid_t)];
+        long unsigned size = sysconf(_SC_NGROUPS_MAX);
+        gid_t *list = new gid_t[int(size)*sizeof(gid_t)];
         buf = getgroups(size, list);
 
         write(args->fd[1], &buf, sizeof(buf));
