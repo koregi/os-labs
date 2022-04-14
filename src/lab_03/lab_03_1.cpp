@@ -1,5 +1,6 @@
 #include <pthread.h>
 #include <unistd.h>
+#include <math.h>
 
 #include <cstdio>
 
@@ -13,9 +14,9 @@ static void* proc1(void* arg) {
     args_t *args = (args_t*)arg;
     int buf;
     while (!(args->flag)) {
-        int size = sysconf(_SC_NGROUPS_MAX);
-        gid_t *list = new gid_t[size*sizeof(gid_t)];
-        buf = getgroups(size, list);
+        long size = sysconf(_SC_NGROUPS_MAX);
+        gid_t *list = new gid_t[abs(size)*sizeof(gid_t)];
+        buf = getgroups(size_t(size), list);
 
         write(args->fd[1], &buf, sizeof(buf));
         printf("Data write\n");
