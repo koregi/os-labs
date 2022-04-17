@@ -1,5 +1,7 @@
 #include <pthread.h>
 #include <unistd.h>
+#include <cerrno>
+#include <string>
 
 #include <cstdio>
 #include <iostream>
@@ -7,23 +9,39 @@
 struct args_t {
     bool flag = false;
     int fd[2];
+    unsigned nbytes = 0;
 };
 
 static void* proc1(void* arg) {
     printf("Thread 1 started\n");
     auto *args = (args_t*)arg;
-    int buf;
+    std::string buf;
     while (!(args->flag)) {
-        long size = sysconf(_SC_NGROUPS_MAX);
-        auto *list = new gid_t[size*sizeof(gid_t)];
-        buf = getgroups(size, list);
+        buf.clear();
 
-        ssize_t nw = write(args->fd[1], &buf, sizeof(buf));
+        long size = sysconf(_SC_NGROUPS_MAX);
+        unsigned usize = 0;
+        if (errno == -1) {
+            perror("Sysconf");
+        } else {
+            usize = static_cast<unsigned> (size);
+        }
+        auto *list = new gid_t[usize*sizeof(gid_t)];
+        int count = getgroups(int(usize), list);
+
+        for (size_t idx = 0; idx < count; ++idx) {
+            buf.append(std::to_string(list[idx]));
+            buf.push_back(' ');
+        }
+
+        args->nbytes = buf.size()*sizeof(std::string);
+        ssize_t nw = write(args->fd[1], &buf[0], args->nbytes);
         if (nw != -1) {
             printf("Data write\n");
         } else {
-            perror("Something went wrong");
+            perror("write");
         }
+
         delete [] list;
         sleep(1);
     }
@@ -33,33 +51,37 @@ static void* proc1(void* arg) {
 static void* proc2(void* arg) {
     printf("Thread 2 started\n");
     auto *args = (args_t*)arg;
-    int buf;
+    ssize_t nr;
+    auto *buf = new char[args->nbytes];
     while (!(args->flag)) {
-        ssize_t nr = read(args->fd[0], &buf, sizeof(buf));
-        if (nr != -1) {
-            printf("Data read: %i\n", buf);
+        nr = read(args->fd[0], buf, args->nbytes);
+        if (nr > 0) {
+            printf("Data read: ");
+            std::cout << buf << '\n';
         } else {
-            perror("Something went wrong");
+            perror("read");
         }
         sleep(1);
     }
+    delete [] buf;
     pthread_exit((void*)4);
 }
+
 
 int main() {
     printf("Program started\n");
 
     pthread_t id1;
     pthread_t id2;
-    int* exitcode1;
-    int* exitcode2;
+    void* exitcode1;
+    void* exitcode2;
     args_t args;
 
     int rv = pipe(args.fd);
     if (rv == 0) {
         printf("Pipe created\n");
     } else {
-        perror("Something went wrong");
+        perror("pipe");
         printf("Program finished\n");
         return 0;
     }
@@ -72,10 +94,10 @@ int main() {
     printf("Key pressed\n");
     args.flag = true;
 
-    pthread_join(id1, (void**)&exitcode1);
-    printf("Thread 1 finished with exit code: %p\n", (void*)exitcode1);
-    pthread_join(id2, (void**)&exitcode2);
-    printf("Thread 2 finished with exit code: %p\n", (void*)exitcode2);
+    pthread_join(id1, &exitcode1);
+    printf("Thread 1 finished with exit code: %p\n", exitcode1);
+    pthread_join(id2, &exitcode2);
+    printf("Thread 2 finished with exit code: %p\n", exitcode2);
 
 
     close(args.fd[0]);
