@@ -2,6 +2,7 @@
 #include <unistd.h>
 
 #include <cstdio>
+#include <iostream>
 
 struct args_t {
     bool flag = false;
@@ -10,15 +11,19 @@ struct args_t {
 
 static void* proc1(void* arg) {
     printf("Thread 1 started\n");
-    args_t *args = (args_t*)arg;
+    auto *args = (args_t*)arg;
     int buf;
     while (!(args->flag)) {
         long size = sysconf(_SC_NGROUPS_MAX);
-        gid_t *list = new gid_t[size*sizeof(gid_t)];
+        auto *list = new gid_t[size*sizeof(gid_t)];
         buf = getgroups(size, list);
 
-        write(args->fd[1], &buf, sizeof(buf));
-        printf("Data write\n");
+        ssize_t nw = write(args->fd[1], &buf, sizeof(buf));
+        if (nw != -1) {
+            printf("Data write\n");
+        } else {
+            perror("Something went wrong");
+        }
         delete [] list;
         sleep(1);
     }
@@ -27,11 +32,15 @@ static void* proc1(void* arg) {
 
 static void* proc2(void* arg) {
     printf("Thread 2 started\n");
-    args_t *args = (args_t*)arg;
+    auto *args = (args_t*)arg;
     int buf;
     while (!(args->flag)) {
-        read(args->fd[0], &buf, sizeof(buf));
-        printf("Data read: %i\n", buf);
+        ssize_t nr = read(args->fd[0], &buf, sizeof(buf));
+        if (nr != -1) {
+            printf("Data read: %i\n", buf);
+        } else {
+            perror("Something went wrong");
+        }
         sleep(1);
     }
     pthread_exit((void*)4);
@@ -46,8 +55,14 @@ int main() {
     int* exitcode2;
     args_t args;
 
-    pipe(args.fd);
-    printf("Pipe created\n");
+    int rv = pipe(args.fd);
+    if (rv == 0) {
+        printf("Pipe created\n");
+    } else {
+        perror("Something went wrong");
+        printf("Program finished\n");
+        return 0;
+    }
 
     pthread_create(&id1, nullptr, proc1, &args);
     pthread_create(&id2, nullptr, proc2, &args);
