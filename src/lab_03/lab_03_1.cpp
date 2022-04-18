@@ -1,10 +1,9 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <cerrno>
-#include <string>
+#include <cstring>
 
 #include <cstdio>
-#include <iostream>
 
 struct args_t {
     bool flag = false;
@@ -15,9 +14,11 @@ struct args_t {
 static void* proc1(void* arg) {
     printf("Thread 1 started\n");
     auto *args = (args_t*)arg;
-    std::string buf;
+    ssize_t nw;
+    char buf[256];
+
     while (!(args->flag)) {
-        buf.clear();
+        memset(buf, 0, 256);
 
         long size = sysconf(_SC_NGROUPS_MAX);
         unsigned usize = 0;
@@ -26,16 +27,20 @@ static void* proc1(void* arg) {
         } else {
             usize = static_cast<unsigned> (size);
         }
-        auto *list = new gid_t[usize*sizeof(gid_t)];
+        auto *list = new gid_t[usize];
         int count = getgroups(int(usize), list);
 
-        for (size_t idx = 0; idx < count; ++idx) {
-            buf.append(std::to_string(list[idx]));
-            buf.push_back(' ');
+        char buff[10];
+        for (int idx = 0; idx < count; ++idx) {
+            std::sprintf(buff, "%i", list[idx]);
+            strcat(buf, buff);
+            if (idx < count-1) {
+                strcat(buf, " ");
+            }
         }
 
-        args->nbytes = buf.size()*sizeof(std::string);
-        ssize_t nw = write(args->fd[1], &buf[0], args->nbytes);
+        args->nbytes = sizeof(buf);
+        nw = write(args->fd[1], &buf, args->nbytes);
         if (nw != -1) {
             printf("Data write\n");
         } else {
@@ -52,18 +57,17 @@ static void* proc2(void* arg) {
     printf("Thread 2 started\n");
     auto *args = (args_t*)arg;
     ssize_t nr;
-    auto *buf = new char[args->nbytes];
+    char buf[256];
+
     while (!(args->flag)) {
-        nr = read(args->fd[0], buf, args->nbytes);
+        nr = read(args->fd[0], &buf, args->nbytes);
         if (nr > 0) {
-            printf("Data read: ");
-            std::cout << buf << '\n';
+            printf("Data read: %s\n", buf);
         } else {
             perror("read");
         }
         sleep(1);
     }
-    delete [] buf;
     pthread_exit((void*)4);
 }
 
