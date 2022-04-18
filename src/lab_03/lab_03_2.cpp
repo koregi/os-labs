@@ -46,6 +46,7 @@ static void* proc1(void* arg) {
             printf("Data write\n");
         } else {
             perror("write");
+            sleep(1);
         }
 
         delete [] list;
