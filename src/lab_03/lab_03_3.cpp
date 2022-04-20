@@ -44,7 +44,6 @@ static void* proc1(void* arg) {
             printf("Data write\n");
         } else {
             perror("write");
-            sleep(1);
         }
 
         delete[] list;
@@ -63,7 +62,6 @@ static void* proc2(void* arg) {
             printf("Data read: %s\n", buf);
         } else if (read(args->fd[0], &buf, args->nbytes) == 0) {
             printf("Pipe empty\n");
-            sleep(1);
         } else {
             perror("read");
         }

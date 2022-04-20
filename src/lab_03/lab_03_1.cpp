@@ -43,7 +43,6 @@ static void* proc1(void* arg) {
             printf("Data write\n");
         } else {
             perror("write");
-            sleep(1);
         }
 
         delete[] list;
@@ -62,7 +61,6 @@ static void* proc2(void* arg) {
             printf("Data read: %s\n", buf);
         } else {
             perror("read");
-            sleep(1);
         }
         sleep(1);
     }
