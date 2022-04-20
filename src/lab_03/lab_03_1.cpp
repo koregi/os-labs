@@ -11,9 +11,9 @@ struct args_t {
     unsigned nbytes = 0;
 };
 
-static void* proc1(void* arg) {
+static void *proc1(void *arg) {
     printf("Thread 1 started\n");
-    auto *args = reinterpret_cast<args_t*>(arg);
+    auto *args = reinterpret_cast<args_t *>(arg);
     char buf[256];
 
     while (!(args->flag)) {
@@ -33,7 +33,7 @@ static void* proc1(void* arg) {
         for (int idx = 0; idx < count; ++idx) {
             std::sprintf(idx_buf, "%i", list[idx]);
             strcat(buf, idx_buf);
-            if (idx < count-1) {
+            if (idx < count - 1) {
                 strcat(buf, " ");
             }
         }
@@ -46,15 +46,15 @@ static void* proc1(void* arg) {
             sleep(1);
         }
 
-        delete [] list;
+        delete[] list;
         sleep(1);
     }
-    pthread_exit(reinterpret_cast<void*>(3));
+    pthread_exit(reinterpret_cast<void *>(3));
 }
 
-static void* proc2(void* arg) {
+static void *proc2(void *arg) {
     printf("Thread 2 started\n");
-    auto *args = reinterpret_cast<args_t*>(arg);
+    auto *args = reinterpret_cast<args_t *>(arg);
     char buf[256];
 
     while (!(args->flag)) {
@@ -66,7 +66,7 @@ static void* proc2(void* arg) {
         }
         sleep(1);
     }
-    pthread_exit(reinterpret_cast<void*>(4));
+    pthread_exit(reinterpret_cast<void *>(4));
 }
 
 
@@ -75,8 +75,8 @@ int main() {
 
     pthread_t id1;
     pthread_t id2;
-    void* exitcode1;
-    void* exitcode2;
+    void *exitcode1;
+    void *exitcode2;
     args_t args;
 
     if (pipe(args.fd) == 0) {
