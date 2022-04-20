@@ -14,8 +14,7 @@ struct args_t {
 
 static void* proc1(void* arg) {
     printf("Thread 1 started\n");
-    auto *args = (args_t*)arg;
-    ssize_t nw;
+    auto *args = reinterpret_cast<args_t*>(arg);
     char buf[256];
 
     while (!(args->flag)) {
@@ -26,23 +25,22 @@ static void* proc1(void* arg) {
         if (errno == -1) {
             perror("Sysconf");
         } else {
-            usize = static_cast<unsigned> (size);
+            usize = static_cast<unsigned>(size);
         }
         auto *list = new gid_t[usize];
-        int count = getgroups(int(usize), list);
+        int count = getgroups(static_cast<int>(usize), list);
 
-        char buff[10];
+        char idx_buf[10];
         for (int idx = 0; idx < count; ++idx) {
-            std::sprintf(buff, "%i", list[idx]);
-            strcat(buf, buff);
+            std::sprintf(idx_buf, "%i", list[idx]);
+            strcat(buf, idx_buf);
             if (idx < count-1) {
                 strcat(buf, " ");
             }
         }
 
         args->nbytes = sizeof(buf);
-        nw = write(args->fd[1], &buf, args->nbytes);
-        if (nw != -1) {
+        if (write(args->fd[1], &buf, args->nbytes) != -1) {
             printf("Data write\n");
         } else {
             perror("write");
@@ -52,21 +50,19 @@ static void* proc1(void* arg) {
         delete [] list;
         sleep(1);
     }
-    pthread_exit((void*)3);
+    pthread_exit(reinterpret_cast<void*>(3));
 }
 
 static void* proc2(void* arg) {
     printf("Thread 2 started\n");
-    auto *args = (args_t*)arg;
-    ssize_t nr;
+    auto *args = reinterpret_cast<args_t*>(arg);
     char buf[256];
 
     while (!(args->flag)) {
         memset(buf, 0, 256);
-        nr = read(args->fd[0], &buf, args->nbytes);
-        if (nr > 0) {
+        if (read(args->fd[0], &buf, args->nbytes) > 0) {
             printf("Data read: %s\n", buf);
-        } else if (nr == 0) {
+        } else if (read(args->fd[0], &buf, args->nbytes) == 0) {
             printf("Pipe empty\n");
             sleep(1);
         } else {
@@ -75,7 +71,7 @@ static void* proc2(void* arg) {
         }
         sleep(1);
     }
-    pthread_exit((void*)4);
+    pthread_exit(reinterpret_cast<void*>(4));
 }
 
 
@@ -88,8 +84,7 @@ int main() {
     void* exitcode2;
     args_t args;
 
-    int rv = pipe2(args.fd, O_NONBLOCK);
-    if (rv == 0) {
+    if (pipe2(args.fd, O_NONBLOCK) == 0) {
         printf("Pipe created\n");
     } else {
         perror("pipe");
