@@ -1,10 +1,10 @@
 #include <fcntl.h>
 #include <pthread.h>
 #include <unistd.h>
-#include <cerrno>
-#include <cstring>
 
+#include <cerrno>
 #include <cstdio>
+#include <cstring>
 
 struct args_t {
     bool flag = false;
@@ -12,9 +12,9 @@ struct args_t {
     unsigned nbytes = 0;
 };
 
-static void *proc1(void *arg) {
+static void* proc1(void* arg) {
     printf("Thread 1 started\n");
-    auto *args = reinterpret_cast<args_t *>(arg);
+    auto* args = reinterpret_cast<args_t*>(arg);
     char buf[256];
 
     while (!(args->flag)) {
@@ -27,7 +27,7 @@ static void *proc1(void *arg) {
         } else {
             usize = static_cast<unsigned>(size);
         }
-        auto *list = new gid_t[usize];
+        auto* list = new gid_t[usize];
         int count = getgroups(static_cast<int>(usize), list);
 
         char idx_buf[10];
@@ -50,12 +50,12 @@ static void *proc1(void *arg) {
         delete[] list;
         sleep(1);
     }
-    pthread_exit(reinterpret_cast<void *>(3));
+    pthread_exit(reinterpret_cast<void*>(3));
 }
 
-static void *proc2(void *arg) {
+static void* proc2(void* arg) {
     printf("Thread 2 started\n");
-    auto *args = reinterpret_cast<args_t *>(arg);
+    auto* args = reinterpret_cast<args_t*>(arg);
     char buf[256];
 
     while (!(args->flag)) {
@@ -71,7 +71,7 @@ static void *proc2(void *arg) {
         }
         sleep(1);
     }
-    pthread_exit(reinterpret_cast<void *>(4));
+    pthread_exit(reinterpret_cast<void*>(4));
 }
 
 
@@ -80,8 +80,8 @@ int main() {
 
     pthread_t id1;
     pthread_t id2;
-    void *exitcode1;
-    void *exitcode2;
+    void* exitcode1;
+    void* exitcode2;
     args_t args;
 
     if (pipe2(args.fd, O_NONBLOCK) == 0) {
@@ -112,4 +112,3 @@ int main() {
     printf("Program finished\n");
     return 0;
 }
-
