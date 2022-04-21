@@ -10,7 +10,7 @@ int main(int argc, char* argv[]) {
     printf("Parent process ID of this program is %d\n", getppid());
 
     printf("Args are:\n");
-    for (size_t idx = 0; idx < argc; ++idx) {
+    for (int idx = 0; idx < argc; ++idx) {
         printf("%s\n", argv[idx]);
         sleep(1);
     }
