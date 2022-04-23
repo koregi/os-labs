@@ -5,7 +5,7 @@
 #include <cstring>
 
 
-int main(int argc, char* argv[]) {
+int main() {
     printf("Parent program started\n\n");
 
     printf("This process (our parent) ID of this program is %d\n", getpid());
