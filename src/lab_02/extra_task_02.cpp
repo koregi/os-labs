@@ -4,7 +4,6 @@
 
 #include <cstdio>
 
-
 struct args_t {
     bool flag{false};
     sem_t sem{};
