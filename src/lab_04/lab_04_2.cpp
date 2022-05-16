@@ -4,7 +4,6 @@
 #include <cstdio>
 #include <cstring>
 
-
 int main() {
     printf("Parent program started\n\n");
 
@@ -21,14 +20,16 @@ int main() {
         if (execl(pwd, "HELLO,", "DEAR", "CHILD!", nullptr) == -1) {
             perror("execl");
         }
-    } else if (pid > 0) {
+    }
+    else if (pid > 0) {
         printf("Child process ID of this program is %d\n", pid);
         while (waitpid(pid, &exitcode, WNOHANG) == 0) {
             printf("Wait\n");
             usleep(500000);
         }
         printf("Child exitcode: %i\n", WEXITSTATUS(exitcode));
-    } else {
+    }
+    else {
         perror("fork");
     }
 
