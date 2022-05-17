@@ -17,7 +17,7 @@ static void* proc(void* arg) {
         sem_wait(g_sem);
         printf("Semaphore captured by prog 2\n");
 
-        for (int j = 0; j < 3; ++j) {
+        for (int j = 0; j < 10; ++j) {
             if (g_out.is_open()) {
                 g_out << "2" << std::flush;
                 printf("2\n");
@@ -43,7 +43,7 @@ int main() {
     pthread_t id;
     int* exitcode;
 
-    g_sem = sem_open("/important", O_CREAT, O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP, 1);
+    g_sem = sem_open("/important", O_CREAT, 0644, 1);
 
     if (g_sem == nullptr) {
         perror("sem_open");
