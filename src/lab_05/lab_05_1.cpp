@@ -35,6 +35,7 @@ static void* proc(void* arg) {
     pthread_exit((void*)3);
 }
 
+
 int main() {
     printf("Program 1 started\n");
 
