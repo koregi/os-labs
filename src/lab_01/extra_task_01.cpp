@@ -25,7 +25,6 @@ static void* proc2(void* arg) {
     pthread_exit((void*)4);
 }
 
-
 int main() {
     printf("Program started\n");
 
