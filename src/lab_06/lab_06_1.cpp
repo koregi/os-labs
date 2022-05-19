@@ -48,6 +48,7 @@ static void* proc(void*) {
         sem_post(write_sem);
         sem_wait(read_sem);
 
+        delete[] list;
         sleep(1);
     }
     pthread_exit(reinterpret_cast<void*>(0));
