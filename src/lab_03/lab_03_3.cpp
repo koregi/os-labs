@@ -24,7 +24,8 @@ static void* proc1(void* arg) {
         unsigned usize = 0;
         if (errno == -1) {
             perror("Sysconf");
-        } else {
+        }
+        else {
             usize = static_cast<unsigned>(size);
         }
         auto* list = new gid_t[usize];
@@ -42,7 +43,8 @@ static void* proc1(void* arg) {
         args->nbytes = sizeof(buf);
         if (write(args->fd[1], &buf, args->nbytes) != -1) {
             printf("Data write\n");
-        } else {
+        }
+        else {
             perror("write");
         }
 
@@ -60,16 +62,17 @@ static void* proc2(void* arg) {
     while (!(args->flag)) {
         if (read(args->fd[0], &buf, args->nbytes) > 0) {
             printf("Data read: %s\n", buf);
-        } else if (read(args->fd[0], &buf, args->nbytes) == 0) {
+        }
+        else if (read(args->fd[0], &buf, args->nbytes) == 0) {
             printf("Pipe empty\n");
-        } else {
+        }
+        else {
             perror("read");
         }
         sleep(1);
     }
     pthread_exit(reinterpret_cast<void*>(4));
 }
-
 
 int main() {
     printf("Program started\n");
@@ -85,7 +88,8 @@ int main() {
     fcntl(args.fd[1], F_SETFL, O_NONBLOCK);
     if (rv == 0) {
         printf("Pipe created\n");
-    } else {
+    }
+    else {
         perror("pipe");
         printf("Program finished\n");
         return 0;
