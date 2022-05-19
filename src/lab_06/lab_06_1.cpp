@@ -77,7 +77,7 @@ int main() {
     ftruncate(shmid, 256);
     addr = (char*)mmap(nullptr, 256, PROT_READ | PROT_WRITE, MAP_SHARED, shmid, 0);
     write_sem = sem_open("/write_sem", O_CREAT, 0644, 0);
-    read_sem = sem_open("/read_sem", O_CREAT, 0644, 1);
+    read_sem = sem_open("/read_sem", O_CREAT, 0644, 0);
 
     signal(SIGINT, sig_handler);
 
