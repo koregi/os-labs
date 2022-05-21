@@ -34,7 +34,7 @@ static void* proc(void*) {
             }
         }
 
-        if (mq_send(m_qid, (const char*)&buf, sizeof(buf), 0) == -1) {
+        if (mq_send(m_qid, reinterpret_cast<const char*>(&buf), sizeof(buf), 0) == -1) {
             perror("mq_send");
         }
         else {
@@ -42,25 +42,10 @@ static void* proc(void*) {
             printf("%s\n", buf);
         }
 
-
         delete[] list;
         sleep(1);
     }
     pthread_exit(reinterpret_cast<void*>(0));
-}
-
-void try_change_attrs(mq_attr &attr) {
-    if (mq_getattr(m_qid, &attr) == -1) {
-        perror("mq_getattr");
-    }
-
-    printf("\nMaximum of messages on queue: %ld\n", attr.mq_maxmsg);
-    printf("Maximum message size: %ld\n", attr.mq_msgsize);
-    printf("Count of messages currently in queue: %ld\n", attr.mq_curmsgs);
-
-    attr.mq_maxmsg = 5;
-    printf("Maximum of messages on queue: %ld\n\n", attr.mq_maxmsg);
-
 }
 
 int main() {
@@ -69,18 +54,30 @@ int main() {
     pthread_t id;
     void* exitcode;
 
+    printf("\nMy maximum of messages on queue from msg_max: %i\n", 10);
+    printf("My maximum message size from msgsize_max: %i\n\n", 8192);
+
     struct mq_attr attr {};
+
     attr.mq_flags = 0;
-    attr.mq_maxmsg = 5;
-    attr.mq_msgsize = 4096;
+    attr.mq_maxmsg = 10 * 2;
+    attr.mq_msgsize = 256;
     attr.mq_curmsgs = 0;
-    //try_change_attrs(attr);
 
     m_qid = mq_open("/my_queue", O_CREAT | O_WRONLY | O_NONBLOCK, 0644, &attr);
     if (m_qid == -1) {
         perror("mq_open");
     }
     printf("Message queue was opened\n");
+
+    struct mq_attr getattr {};
+
+    if (mq_getattr(m_qid, &getattr) == -1) {
+        perror("mq_getattr");
+    }
+    printf("\nNew maximum of messages on queue: %ld\n", getattr.mq_maxmsg);
+    printf("New maximum message size: %ld\n\n", getattr.mq_msgsize);
+
 
     pthread_create(&id, nullptr, proc, nullptr);
     printf("Program is waiting for a keystroke\n");
@@ -91,7 +88,7 @@ int main() {
     printf("Thread 1 finished with exit code: %p\n", exitcode);
 
     mq_close(m_qid);
-    mq_unlink("my_queue");
+    mq_unlink("/my_queue");
     printf("Message queue was closed\n");
 
     printf("Program finished\n");

@@ -15,20 +15,20 @@ static void* proc(void*) {
     while (!flag) {
         memset(buf, 0, 8192);
 
-        if (mq_receive(m_qid, buf, sizeof(buf), nullptr) >= 0) {
-            printf("Data was received\n");
-            printf("%s\n", buf);
-        } else {
+        if (mq_receive(m_qid, buf, sizeof(buf), nullptr) == -1) {
             perror("mq_receive");
             sleep(1);
             continue;
+        }
+        else {
+            printf("Data was received\n");
+            printf("%s\n", buf);
         }
 
         sleep(1);
     }
     pthread_exit(reinterpret_cast<void*>(0));
 }
-
 
 int main() {
     printf("Program started\n");
@@ -41,6 +41,14 @@ int main() {
         perror("mq_open");
     }
     printf("Message queue was opened\n");
+
+    struct mq_attr getattr {};
+
+    if (mq_getattr(m_qid, &getattr) == -1) {
+        perror("mq_getattr");
+    }
+    printf("\nNew maximum of messages on queue: %ld\n", getattr.mq_maxmsg);
+    printf("New maximum message size: %ld\n\n", getattr.mq_msgsize);
 
     pthread_create(&id, nullptr, proc, nullptr);
     printf("Program is waiting for a keystroke\n");
