@@ -59,7 +59,7 @@ int main() {
     printf("Thread 2 finished with exit code: %p\n", exitcode);
 
     mq_close(m_qid);
-    mq_unlink("my_queue");
+    mq_unlink("/my_queue");
     printf("Message queue was closed\n");
 
     printf("Program finished\n");
